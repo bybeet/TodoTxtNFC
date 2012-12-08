@@ -88,9 +88,10 @@ You should have received a copy of the GNU General Public License along with Tod
     <string name="manual_sync_pref_key">workofflinepref</string>
     <string name="manual_sync_pref_title">Manual sync</string>
     <string name="manual_sync_pref_summary">Don\'t automatically upload every change to Dropbox.</string>
-    <string name="dropbox_consumer_key">Test Dropbox Consumer Key.</string>
-    <string name="dropbox_consumer_secret">Test Dropbox Consumer Secret.</string>
-
+    <!--
+    <string name="dropbox_consumer_key">pqk94b0p1iq1brq</string>
+    <string name="dropbox_consumer_secret">qwrcbonz7kcip74</string>
+    -->
 
     <!-- sync dialog -->
     <string name="sync_dialog_title">Manual Sync</string>
