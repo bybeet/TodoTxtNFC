@@ -646,7 +646,8 @@ public class TodoTxtTouch extends ListActivity implements
 			startFilterActivity();
 			break;
 		case R.id.nfc:
-			startSortDialog();
+			Intent i = new Intent(this, NfcActivity.class);
+			startActivity(i);
 			break;
 		default:
 			return super.onMenuItemSelected(featureId, item);

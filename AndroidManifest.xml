@@ -127,6 +127,10 @@ You should have received a copy of the GNU General Public License along with Tod
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <activity
+            android:name=".NfcActivity">
+        </activity>
+
        
         <!-- Task list widget -->
         <receiver
