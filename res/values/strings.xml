@@ -146,4 +146,7 @@ You should have received a copy of the GNU General Public License along with Tod
     <string name="dates_months_ago">%d months ago</string>
     <string name="dates_one_month_ago">1 month ago</string>
 
+    <!-- NFC -->
+    <string name="nfc">NFC</string>
+    
 </resources>

@@ -645,7 +645,7 @@ public class TodoTxtTouch extends ListActivity implements
 		case R.id.filter:
 			startFilterActivity();
 			break;
-		case R.id.sort:
+		case R.id.nfc:
 			startSortDialog();
 			break;
 		default:
