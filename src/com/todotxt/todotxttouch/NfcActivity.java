@@ -29,9 +29,7 @@ import com.todotxt.todotxttouch.task.TaskBag;
 import com.todotxt.todotxttouch.util.Util;
 
 public class NfcActivity extends Activity{
-
-	private static final String TAG = "TEST";
-
+	
 	private boolean mWriteMode;
 	private IntentFilter[] mWriteTagFilters;
 	private NfcAdapter mNfcAdapter;
@@ -44,7 +42,6 @@ public class NfcActivity extends Activity{
 
 	private TodoApplication m_app;
 	private TaskBag taskBag;
-
 	private ArrayList<String> projects;
 	private ArrayList<String> contexts;
 	private Spinner contextSpinner;
@@ -54,6 +51,8 @@ public class NfcActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nfc);
+		
+		mWriteMode = false;
 
 		m_app = (TodoApplication) getApplication();
 		taskBag = m_app.getTaskBag();	
@@ -68,13 +67,14 @@ public class NfcActivity extends Activity{
 		projectSpinner = (Spinner)findViewById(R.id.projects_spinner);
 		contextSpinner = (Spinner)findViewById(R.id.context_spinner);
 
+		//Set spinners to contain the projects and contexts
 		projectSpinner.setAdapter(Util.newSpinnerAdapter(this, projects));
 		contextSpinner.setAdapter(Util.newSpinnerAdapter(this, contexts));
 
-		//initSpinners();
-
+		//Set on button push, add for an add tag and filter for filter tag.
 		nfcTagType = new String("none");
 
+		//Set tag type and start listening to write tags.
 		add.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -93,13 +93,14 @@ public class NfcActivity extends Activity{
 			}
 		});
 
+		//Set up this activity to wait for a pendingintent, the nfc tag.
 		mNfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 	}
 
 	@Override
 	public void onPause(){
-		mNfcAdapter.disableForegroundDispatch(this);
+		disableTagWriteMode();
 		super.onPause();
 	}
 
@@ -108,10 +109,8 @@ public class NfcActivity extends Activity{
 		super.onResume();
 	}
 
-	private void initSpinners(){
-
-	}
-
+	//Show user dialog for writing to NFC
+	//Give user and overview of what will be written
 	private void callNfcAlert(){
 		enableTagWriteMode();
 		StringBuilder title = new StringBuilder("");
@@ -134,8 +133,10 @@ public class NfcActivity extends Activity{
 			.show();
 	}
 
+	//Stop listening for NFC tags
 	public void disableTagWriteMode(){
 		mNfcAdapter.disableForegroundDispatch(this);
+		mWriteMode = false;
 	}
 
 	//Add an intent filter to discover NFC tags for writing data.
@@ -146,6 +147,7 @@ public class NfcActivity extends Activity{
 		mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, mWriteTagFilters, null);
 	}
 
+	//If 
 	@Override
 	protected void onNewIntent(Intent intent) {
 		// Tag writing mode
@@ -169,20 +171,27 @@ public class NfcActivity extends Activity{
 		return NdefRecord.createMime("application/vnd.com.example.android.beam", "Beam me up, Android".getBytes(Charset.forName("US-ASCII")));
 	}
 
+	//Write a NdefMessage to a tag.
 	public static boolean writeTag(NdefMessage message, Tag tag) {
 		int size = message.toByteArray().length;
 		try {
+			//Get tag info
 			Ndef ndef = Ndef.get(tag);
+			//If the tag is not empty
 			if (ndef != null) {
 				ndef.connect();
+				//Ensure tag is not write protected/read only
 				if (!ndef.isWritable()) {
 					return false;
 				}
+				//Ensure message size fits within tag.
 				if (ndef.getMaxSize() < size) {
 					return false;
 				}
+				//Write message to tag
 				ndef.writeNdefMessage(message);
 				return true;
+			//If the tag is empty then format tag with the message
 			} else {
 				NdefFormatable format = NdefFormatable.get(tag);
 				if (format != null) {
@@ -202,31 +211,12 @@ public class NfcActivity extends Activity{
 		}
 	}
 
-	public NdefMessage getKeywordAsNdef(String msg) {
+	//Put project and context into an NdefMessage
+	private NdefMessage getKeywordAsNdef(String msg) {
 		byte[] textBytes = msg.getBytes();
 		String ndefText = "application/nfc.todotxtnfc." + nfcTagType;
 		NdefRecord textRecord = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, ndefText.getBytes(), new byte[] {}, textBytes);
 		return new NdefMessage(new NdefRecord[] { textRecord });
 	}
 
-	public String readTag(Tag tag) {
-		MifareUltralight mifare = MifareUltralight.get(tag);
-		try {
-			mifare.connect();
-			byte[] payload = mifare.readPages(4);
-			return new String(payload, Charset.forName("US-ASCII"));
-		} catch (IOException e) {
-			Log.e(TAG, "IOException while writing MifareUltralight message:", e);
-		} finally {
-			if (mifare != null) {
-				try {
-					mifare.close();
-				}
-				catch (IOException e) {
-					Log.e(TAG, "Error closing tag:", e);
-				}
-			}
-		}
-		return null;
-	}
 }
