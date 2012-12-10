@@ -26,8 +26,8 @@ You should have received a copy of the GNU General Public License along with Tod
     android:versionName="1.0.2" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-sdk
-        android:minSdkVersion="4"
-        android:targetSdkVersion="4" />
+        android:minSdkVersion="16"
+        android:targetSdkVersion="16" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -122,6 +122,11 @@ You should have received a copy of the GNU General Public License along with Tod
             android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/com.todotxt.todotxttouch" />
             </intent-filter>
 
             <meta-data

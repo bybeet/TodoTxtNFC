@@ -12,4 +12,9 @@ public class NfcActivity extends Activity{
 		setContentView(R.layout.nfc);
 	}
 
+	public void createTag(){
+		NdefRecord mimeRecord = NdefRecord.createMime("application/vnd.com.example.android.beam",
+	    "Beam me up, Android".getBytes(Charset.forName("US-ASCII")));
+	}
+
 }
