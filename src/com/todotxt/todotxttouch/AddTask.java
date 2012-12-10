@@ -282,32 +282,40 @@ public class AddTask extends Activity {
 	@Override
 	public void onResume(){
 		super.onResume();
+		//Check to see if the activity was called with NFC NDEF.
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-			NdefMessage[] messages = getNdefMessages(getIntent());
-			byte[] payload = messages[0].getRecords()[0].getPayload();
+			//Get NDEF message
+			NdefMessage[] message = getNdefMessages(getIntent());
+			//Get the information from the NDEF message.
+			byte[] payload = message[0].getRecords()[0].getPayload();
+			//Place info into a string.
 			String nfcMessage = new String(payload);
 			StringBuilder keywords = new StringBuilder();
+			//Use string builder to efficiently add a space to the end
+			//		Also could have just added a space using the string builder to create the tag
 			keywords.append(nfcMessage).append(" ");
+			//Set the todo textfield to the project and context from the tag.
 			textInputField.setText(keywords.toString());
+			//Set cursor to be at the end of the NFC message text.
 			textInputField.setSelection(keywords.length());
 		}
 	}
 
 	private NdefMessage[] getNdefMessages(Intent intent) {
-		// Parse the intent
+		//Parse the intent
 		NdefMessage[] msgs = null;
 		String action = intent.getAction();
-		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-				|| NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-			Parcelable[] rawMsgs = 
-					intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+		//If the Intent action is the NDEF intent filter action, parse the message.
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)	|| NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+			//Get the messages from the NFC NDEF.
+			Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 			if (rawMsgs != null) {
 				msgs = new NdefMessage[rawMsgs.length];
 				for (int i = 0; i < rawMsgs.length; i++) {
 					msgs[i] = (NdefMessage) rawMsgs[i];
 				}
 			} else {
-				// Unknown tag type
+				// Unknown tag type.
 				byte[] empty = new byte[] {};
 				NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
 				NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
