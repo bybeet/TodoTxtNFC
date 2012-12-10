@@ -177,24 +177,23 @@ public class Filter extends TabActivity {
 			//Place info into a string.
 			String nfcMessage = new String(payload);
 			StringBuilder keywords = new StringBuilder();
-			//Use string builder to efficiently add a space to the end
-			//		Also could have just added a space using the string builder to create the tag
-			keywords.append(nfcMessage).append(" ");
-			//Set the todo textfield to the project and context from the tag.
+			
+			//Load projects and contexts from NFC tag into intent to send 
 			Log.v(TAG, "NFC OK");
 			Intent data = new Intent();
 			Log.v(TAG, "Setting message filter types.");
+			
 			appliedFilters = new ArrayList<String>();
-			data.putStringArrayListExtra(Constants.EXTRA_PRIORITIES,
-					getItems(priorities, getString(R.string.filter_tab_priorities)));
-			data.putStringArrayListExtra(Constants.EXTRA_PROJECTS,
-					getItems(projects, getString(R.string.filter_tab_projects)));
-			data.putStringArrayListExtra(Constants.EXTRA_CONTEXTS,
-					getItems(contexts, getString(R.string.filter_tab_contexts)));
-			data.putExtra(Constants.EXTRA_SEARCH, search.getText()
-					.toString());
-			data.putStringArrayListExtra(Constants.EXTRA_APPLIED_FILTERS,
-					appliedFilters);
+			ArrayList<String> priorities = new ArrayList<String>();
+			ArrayList<String> projects = new ArrayList<String>();
+			ArrayList<String> contexts = new ArrayList<String>();
+			String search = new String();
+		
+			data.putStringArrayListExtra(Constants.EXTRA_PRIORITIES, priorities);
+			data.putStringArrayListExtra(Constants.EXTRA_PROJECTS, projects);
+			data.putStringArrayListExtra(Constants.EXTRA_CONTEXTS, contexts);
+			data.putExtra(Constants.EXTRA_SEARCH, search);
+			data.putStringArrayListExtra(Constants.EXTRA_APPLIED_FILTERS, appliedFilters);
 			setResult(Activity.RESULT_OK, data);
 			finish();
 		}
