@@ -3,52 +3,54 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:layout_marginBottom="25dp" >
+
+        <Spinner
+            android:id="@+id/projects_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Project"
             android:textSize="25dp" />
+    </RelativeLayout>
 
-        <Spinner
-            android:id="@+id/projects_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:layout_marginBottom="25dp"  >
+
+        <Spinner
+            android:id="@+id/context_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Context"
             android:textSize="25dp" />
-
-        <Spinner
-            android:id="@+id/context_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/nfc_add"
         android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:text="@string/nfc_add" />
 
     <Button
         android:id="@+id/nfc_filter"
         android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:text="@string/nfc_filter" />
 
 </LinearLayout>

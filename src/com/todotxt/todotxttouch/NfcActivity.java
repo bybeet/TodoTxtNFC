@@ -64,8 +64,11 @@ public class NfcActivity extends Activity{
 		contexts = taskBag.getContexts();
 		contexts.add(0, "No context");
 		
+		add = (Button)findViewById(R.id.nfc_add);
+		filter = (Button)findViewById(R.id.nfc_filter);
 		projectSpinner = (Spinner)findViewById(R.id.projects_spinner);
 		contextSpinner = (Spinner)findViewById(R.id.context_spinner);
+		
 		projectSpinner.setAdapter(Util.newSpinnerAdapter(this, projects));
 		contextSpinner.setAdapter(Util.newSpinnerAdapter(this, contexts));
 		
@@ -73,10 +76,7 @@ public class NfcActivity extends Activity{
 
 		nfcTagType = new String("none");
 		tagContext = new String("+mmdroid");
-
-		add = (Button)findViewById(R.id.nfc_add);
-		filter = (Button)findViewById(R.id.nfc_filter);
-
+		
 		add.setOnClickListener(new OnClickListener() {
 
 			@Override
