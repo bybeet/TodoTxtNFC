@@ -151,5 +151,7 @@ You should have received a copy of the GNU General Public License along with Tod
     <string name="nfc_add">New TodoList Task</string>
     <string name="nfc_filter">Filter TodoList Tasks</string>
     <string name="nfc_write">Write to NFC Tag</string>
+    <string name="nfc_content">\@Content</string>
+    <string name="nfc_project">+Project</string>
     
 </resources>

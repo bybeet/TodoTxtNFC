@@ -65,6 +65,7 @@ public class NfcActivity extends Activity{
 		write = (Button)findViewById(R.id.nfc_write);
 		add = (RadioButton)findViewById(R.id.nfc_add);
 		filter = (RadioButton)findViewById(R.id.nfc_filter);
+		
 		projectSpinner = (Spinner)findViewById(R.id.projects_spinner);
 		contextSpinner = (Spinner)findViewById(R.id.context_spinner);
 
@@ -112,8 +113,13 @@ public class NfcActivity extends Activity{
 	private void callNfcAlert(){
 		enableTagWriteMode();
 		StringBuilder title = new StringBuilder("");
-		title.append("Touch tag to write a ")
-			.append(nfcTagType);
+		title.append("Touch tag to write: ");
+		if(nfcTagType.equals("add")){
+			title.append("Add Task Tag");
+		}
+		else{
+			title.append("Filter Tasks Tag");
+		}
 		StringBuilder message = new StringBuilder("");
 		message.append("\nProject = ")
 			.append(projectSpinner.getSelectedItem())
