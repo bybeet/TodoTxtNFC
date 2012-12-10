@@ -21,9 +21,10 @@ You should have received a copy of the GNU General Public License along with Tod
 @license http://www.gnu.org/licenses/gpl.html
 @copyright 2009-2012 Todo.txt contributors (http://todotxt.com)
 -->
-<manifest package="com.todotxt.todotxttouch"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.todotxt.todotxttouch"
     android:versionCode="32"
-    android:versionName="1.0.2" xmlns:android="http://schemas.android.com/apk/res/android">
+    android:versionName="1.0.2" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -41,26 +42,26 @@ You should have received a copy of the GNU General Public License along with Tod
         android:resizeable="true"
         android:smallScreens="true" />
 
-
     <application
         android:name=".TodoApplication"
         android:debuggable="true"
         android:icon="@drawable/todotxt_touch_icon"
         android:label="@string/app_label" >
-         <activity
+        <activity
             android:name="com.dropbox.client2.android.AuthActivity"
             android:configChanges="orientation|keyboard"
             android:launchMode="singleTask" >
             <intent-filter>
+
                 <!-- <data android:scheme="@dropbox/dropbox_consumer_key" /> -->
                 <data android:scheme="db-juay4nbnwi2grxz" />
-                
+
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>        
+        </activity>
         <activity
             android:name=".LoginScreen"
             android:configChanges="keyboardHidden|orientation"
@@ -111,6 +112,13 @@ You should have received a copy of the GNU General Public License along with Tod
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="application/nfc.todotxtnfc.add" />
+            </intent-filter>
         </activity-alias>
 
         <activity
@@ -125,8 +133,10 @@ You should have received a copy of the GNU General Public License along with Tod
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/com.todotxt.todotxttouch" />
+
+                <data android:mimeType="application/nfc.todotxtnfc.filter" />
             </intent-filter>
 
             <meta-data
@@ -136,14 +146,8 @@ You should have received a copy of the GNU General Public License along with Tod
         <activity
             android:name=".NfcActivity"
             android:theme="@android:style/Theme.Holo.Light" >
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/com.todotxt.todotxttouch" />
-            </intent-filter>
         </activity>
 
-       
         <!-- Task list widget -->
         <receiver
             android:name=".TodoWidgetProvider"

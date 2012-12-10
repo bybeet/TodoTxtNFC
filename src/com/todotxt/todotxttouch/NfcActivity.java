@@ -167,10 +167,6 @@ public class NfcActivity extends Activity{
 		}
 	}
 
-	public NdefRecord createTag(){
-		return NdefRecord.createMime("application/vnd.com.example.android.beam", "Beam me up, Android".getBytes(Charset.forName("US-ASCII")));
-	}
-
 	//Write a NdefMessage to a tag.
 	public static boolean writeTag(NdefMessage message, Tag tag) {
 		int size = message.toByteArray().length;
