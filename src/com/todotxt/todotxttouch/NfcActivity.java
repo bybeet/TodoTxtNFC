@@ -116,7 +116,14 @@ public class NfcActivity extends Activity{
 
 	private void callNfcAlert(){
 		enableTagWriteMode();
-		new AlertDialog.Builder(NfcActivity.this).setTitle("Touch tag to write")
+		StringBuilder dialog = new StringBuilder("");
+		dialog.append("Touch tag to write a ")
+			.append(nfcTagType)
+			.append("\nProject = ")
+			.append(projectSpinner.getSelectedItem())
+			.append("\nContext = ")
+			.append(contextSpinner.getSelectedItem());
+		new AlertDialog.Builder(NfcActivity.this).setTitle(dialog.toString())
 		.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
