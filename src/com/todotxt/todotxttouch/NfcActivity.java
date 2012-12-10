@@ -62,6 +62,8 @@ public class NfcActivity extends Activity{
 		//Set ArrayLists to include all current projects and contexts in task list
 		projects = taskBag.getProjects();
 		contexts = taskBag.getContexts();
+		contexts.add(0, "No context");
+		
 		projectSpinner = (Spinner)findViewById(R.id.projects_spinner);
 		contextSpinner = (Spinner)findViewById(R.id.context_spinner);
 		projectSpinner.setAdapter(Util.newSpinnerAdapter(this, projects));

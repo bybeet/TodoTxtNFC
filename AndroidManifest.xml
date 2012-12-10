@@ -134,7 +134,8 @@ You should have received a copy of the GNU General Public License along with Tod
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".NfcActivity">
+            android:name=".NfcActivity"
+            android:theme="@android:style/Theme.Holo.Light" >
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
