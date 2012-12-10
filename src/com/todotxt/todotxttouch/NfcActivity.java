@@ -80,11 +80,11 @@ public class NfcActivity extends Activity{
 
 	@Override
 	public void onResume(){
-		enableTagWriteMode();
 		super.onResume();
 	}
 
 	private void callNfcAlert(){
+		enableTagWriteMode();
 		new AlertDialog.Builder(NfcActivity.this).setTitle("Touch tag to write")
 		.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
