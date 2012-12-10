@@ -682,6 +682,9 @@ OnSharedPreferenceChangeListener {
 		case R.id.filter:
 			startFilterActivity();
 			break;
+		case R.id.sort:
+			startSortDialog();
+			break;
 		case R.id.nfc:
 			Intent i = new Intent(this, NfcActivity.class);
 			startActivity(i);
