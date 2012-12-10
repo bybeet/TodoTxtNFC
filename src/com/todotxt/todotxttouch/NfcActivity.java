@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-import com.todotxt.todotxttouch.task.TaskBag;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -24,7 +22,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.todotxt.todotxttouch.task.TaskBag;
+import com.todotxt.todotxttouch.util.Util;
 
 public class NfcActivity extends Activity{
 
@@ -45,6 +47,9 @@ public class NfcActivity extends Activity{
 	private TaskBag taskBag;
 	
 	private ArrayList<String> projects;
+	private ArrayList<String> contexts;
+	private Spinner contextSpinner;
+	private Spinner projectSpinner;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -53,6 +58,16 @@ public class NfcActivity extends Activity{
 		
 		m_app = (TodoApplication) getApplication();
 		taskBag = m_app.getTaskBag();	
+		
+		//Set ArrayLists to include all current projects and contexts in task list
+		projects = taskBag.getProjects();
+		contexts = taskBag.getContexts();
+		projectSpinner = (Spinner)findViewById(R.id.projects_spinner);
+		contextSpinner = (Spinner)findViewById(R.id.context_spinner);
+		projectSpinner.setAdapter(Util.newSpinnerAdapter(this, projects));
+		contextSpinner.setAdapter(Util.newSpinnerAdapter(this, contexts));
+		
+		//initSpinners();
 
 		nfcTagType = new String("none");
 		tagContext = new String("+mmdroid");
@@ -77,19 +92,9 @@ public class NfcActivity extends Activity{
 				callNfcAlert();
 			}
 		});
-		
-		
-		Intent i = getIntent();
-		//projects = i.getStringArrayListExtra(TodoTxtTouch.PROJECTS);
-		projects = taskBag.getProjects();
-		System.out.println(projects.toString());
-
 
 		mNfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-
-
-
 	}
 
 	@Override
@@ -101,6 +106,10 @@ public class NfcActivity extends Activity{
 	@Override
 	public void onResume(){
 		super.onResume();
+	}
+	
+	private void initSpinners(){
+		
 	}
 
 	private void callNfcAlert(){
