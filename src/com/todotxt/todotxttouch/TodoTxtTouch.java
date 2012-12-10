@@ -49,8 +49,12 @@ import android.content.res.Resources;
 import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -81,7 +85,7 @@ import com.todotxt.todotxttouch.util.Util;
 import com.todotxt.todotxttouch.util.Util.OnMultiChoiceDialogListener;
 
 public class TodoTxtTouch extends ListActivity implements
-		OnSharedPreferenceChangeListener {
+OnSharedPreferenceChangeListener {
 
 	final static String TAG = TodoTxtTouch.class.getSimpleName();
 
@@ -205,36 +209,37 @@ public class TodoTxtTouch extends ListActivity implements
 	}
 
 	void resolveIntent(Intent intent) {
-        // Parse the intent
-        String action = intent.getAction();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-            // When a tag is discovered we send it to the service to be save. We
-            // include a PendingIntent for the service to call back onto. This
-            // will cause this activity to be restarted with onNewIntent(). At
-            // that time we read it from the database and view it.
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-            } else {
-                // Unknown tag type
-                byte[] empty = new byte[] {};
-                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
-                NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
-                msgs = new NdefMessage[] {msg};
-            }
-            // Setup the views
-            setTitle(R.string.title_scanned_tag);
-            buildTagViews(msgs);
-        } else {
-            Log.e(TAG, "Unknown intent " + intent);
-            finish();
-            return;
-        }
-    }
+		// Parse the intent
+		String action = intent.getAction();
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+			// When a tag is discovered we send it to the service to be save. We
+			// include a PendingIntent for the service to call back onto. This
+			// will cause this activity to be restarted with onNewIntent(). At
+			// that time we read it from the database and view it.
+			Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			NdefMessage[] msgs;
+			if (rawMsgs != null) {
+				msgs = new NdefMessage[rawMsgs.length];
+				for (int i = 0; i < rawMsgs.length; i++) {
+					msgs[i] = (NdefMessage) rawMsgs[i];
+				}
+			} else {
+				// Unknown tag type
+				byte[] empty = new byte[] {};
+				NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
+				NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
+				msgs = new NdefMessage[] {msg};
+			}
+			
+			// Setup the views
+			//setTitle(R.string.title_scanned_tag);
+			//buildTagViews(msgs);
+		} else {
+			Log.e(TAG, "Unknown intent " + intent);
+			finish();
+			return;
+		}
+	}
 
 	private void initializeTasks() {
 		boolean firstrun = m_app.m_prefs.getBoolean(Constants.PREF_FIRSTRUN,
@@ -315,7 +320,7 @@ public class TodoTxtTouch extends ListActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
-		this.options_menu = menu;
+		//this.options_menu = menu;
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -461,7 +466,7 @@ public class TodoTxtTouch extends ListActivity implements
 
 					protected void onPostExecute(Boolean result) {
 						TodoTxtTouch.currentActivityPointer
-								.dismissProgressDialog(true);
+						.dismissProgressDialog(true);
 						if (result) {
 							Util.showToastLong(TodoTxtTouch.this,
 									"Prioritized task " + task.getText());
@@ -505,7 +510,7 @@ public class TodoTxtTouch extends ListActivity implements
 
 					protected void onPostExecute(Boolean result) {
 						TodoTxtTouch.currentActivityPointer
-								.dismissProgressDialog(true);
+						.dismissProgressDialog(true);
 						if (result) {
 							Util.showToastLong(TodoTxtTouch.this,
 									"Task marked as not completed");
@@ -555,7 +560,7 @@ public class TodoTxtTouch extends ListActivity implements
 
 				protected void onPostExecute(Boolean result) {
 					TodoTxtTouch.currentActivityPointer
-							.dismissProgressDialog(true);
+					.dismissProgressDialog(true);
 					if (result) {
 						Util.showToastLong(TodoTxtTouch.this, "Completed task "
 								+ task.inFileFormat());
@@ -605,7 +610,7 @@ public class TodoTxtTouch extends ListActivity implements
 
 					protected void onPostExecute(Boolean result) {
 						TodoTxtTouch.currentActivityPointer
-								.dismissProgressDialog(true);
+						.dismissProgressDialog(true);
 						if (result) {
 							Util.showToastLong(TodoTxtTouch.this,
 									"Deleted task " + task.inFileFormat());
@@ -658,7 +663,7 @@ public class TodoTxtTouch extends ListActivity implements
 	}
 
 	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.v(TAG, "onMenuItemSelected: " + item.getItemId());
 		switch (item.getItemId()) {
 		case R.id.add_new:
@@ -682,7 +687,7 @@ public class TodoTxtTouch extends ListActivity implements
 			startActivity(i);
 			break;
 		default:
-			return super.onMenuItemSelected(featureId, item);
+			return super.onOptionsItemSelected(item);
 		}
 		return true;
 	}
@@ -696,14 +701,14 @@ public class TodoTxtTouch extends ListActivity implements
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setSingleChoiceItems(R.array.sort, sort.getId(),
 				new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Log.v(TAG, "onClick " + which);
-						sort = Sort.getById(which);
-						dialog.dismiss();
-						setFilteredTasks(false);
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Log.v(TAG, "onClick " + which);
+				sort = Sort.getById(which);
+				dialog.dismiss();
+				setFilteredTasks(false);
+			}
+		});
 		builder.show();
 	}
 
@@ -833,18 +838,18 @@ public class TodoTxtTouch extends ListActivity implements
 			d = Util.createMultiChoiceDialog(this,
 					pStrs.toArray(new String[size]), values, null, null,
 					new OnMultiChoiceDialogListener() {
-						@Override
-						public void onClick(boolean[] selected) {
-							m_prios.clear();
-							for (int i = 0; i < selected.length; i++) {
-								if (selected[i]) {
-									m_prios.add(pStrs.get(i));
-								}
-							}
-							setFilteredTasks(false);
-							removeDialog(R.id.priority);
+				@Override
+				public void onClick(boolean[] selected) {
+					m_prios.clear();
+					for (int i = 0; i < selected.length; i++) {
+						if (selected[i]) {
+							m_prios.add(pStrs.get(i));
 						}
-					});
+					}
+					setFilteredTasks(false);
+					removeDialog(R.id.priority);
+				}
+			});
 			d.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialog) {
@@ -859,24 +864,24 @@ public class TodoTxtTouch extends ListActivity implements
 			upDownChoice.setMessage(R.string.sync_dialog_msg);
 			upDownChoice.setPositiveButton(R.string.sync_dialog_upload,
 					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface arg0, int arg1) {
-							sendBroadcast(new Intent(
-									Constants.INTENT_START_SYNC_TO_REMOTE)
-									.putExtra(Constants.EXTRA_FORCE_SYNC, true));
-							// backgroundPushToRemote();
-							showToast(getString(R.string.sync_upload_message));
-						}
-					});
+				public void onClick(DialogInterface arg0, int arg1) {
+					sendBroadcast(new Intent(
+							Constants.INTENT_START_SYNC_TO_REMOTE)
+					.putExtra(Constants.EXTRA_FORCE_SYNC, true));
+					// backgroundPushToRemote();
+					showToast(getString(R.string.sync_upload_message));
+				}
+			});
 			upDownChoice.setNegativeButton(R.string.sync_dialog_download,
 					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface arg0, int arg1) {
-							sendBroadcast(new Intent(
-									Constants.INTENT_START_SYNC_FROM_REMOTE)
-									.putExtra(Constants.EXTRA_FORCE_SYNC, true));
-							// backgroundPullFromRemote();
-							showToast(getString(R.string.sync_download_message));
-						}
-					});
+				public void onClick(DialogInterface arg0, int arg1) {
+					sendBroadcast(new Intent(
+							Constants.INTENT_START_SYNC_FROM_REMOTE)
+					.putExtra(Constants.EXTRA_FORCE_SYNC, true));
+					// backgroundPullFromRemote();
+					showToast(getString(R.string.sync_download_message));
+				}
+			});
 			return upDownChoice.show();
 		} else if (id == SYNC_CONFLICT_DIALOG) {
 			Log.v(TAG, "Time to show the sync conflict dialog");
@@ -885,27 +890,27 @@ public class TodoTxtTouch extends ListActivity implements
 			upDownChoice.setMessage(R.string.sync_conflict_dialog_msg);
 			upDownChoice.setPositiveButton(R.string.sync_dialog_upload,
 					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface arg0, int arg1) {
-							Log.v(TAG, "User selected PUSH");
-							sendBroadcast(new Intent(
-									Constants.INTENT_START_SYNC_TO_REMOTE)
-									.putExtra(Constants.EXTRA_OVERWRITE, true)
-									.putExtra(Constants.EXTRA_FORCE_SYNC, true));
-							// backgroundPushToRemote();
-							showToast(getString(R.string.sync_upload_message));
-						}
-					});
+				public void onClick(DialogInterface arg0, int arg1) {
+					Log.v(TAG, "User selected PUSH");
+					sendBroadcast(new Intent(
+							Constants.INTENT_START_SYNC_TO_REMOTE)
+					.putExtra(Constants.EXTRA_OVERWRITE, true)
+					.putExtra(Constants.EXTRA_FORCE_SYNC, true));
+					// backgroundPushToRemote();
+					showToast(getString(R.string.sync_upload_message));
+				}
+			});
 			upDownChoice.setNegativeButton(R.string.sync_dialog_download,
 					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface arg0, int arg1) {
-							Log.v(TAG, "User selected PULL");
-							sendBroadcast(new Intent(
-									Constants.INTENT_START_SYNC_FROM_REMOTE)
-									.putExtra(Constants.EXTRA_FORCE_SYNC, true));
-							// backgroundPullFromRemote();
-							showToast(getString(R.string.sync_download_message));
-						}
-					});
+				public void onClick(DialogInterface arg0, int arg1) {
+					Log.v(TAG, "User selected PULL");
+					sendBroadcast(new Intent(
+							Constants.INTENT_START_SYNC_FROM_REMOTE)
+					.putExtra(Constants.EXTRA_FORCE_SYNC, true));
+					// backgroundPullFromRemote();
+					showToast(getString(R.string.sync_download_message));
+				}
+			});
 			return upDownChoice.show();
 		} else {
 			return null;
@@ -978,11 +983,11 @@ public class TodoTxtTouch extends ListActivity implements
 
 		lv.setSelectionFromTop(index, top);
 
-		final TextView filterText = (TextView) findViewById(R.id.filter_text);
-		final LinearLayout actionbar = (LinearLayout) findViewById(R.id.actionbar);
-		final ImageView actionbar_icon = (ImageView) findViewById(R.id.actionbar_icon);
+		//final TextView filterText = (TextView) findViewById(R.id.filter_text);
+		//final LinearLayout actionbar = (LinearLayout) findViewById(R.id.actionbar);
+		//final ImageView actionbar_icon = (ImageView) findViewById(R.id.actionbar_icon);
 
-		if (filterText != null) {
+		/*if (filterText != null) {
 			if (m_filters.size() > 0) {
 				String filterTitle = getString(R.string.title_filter_applied)
 						+ " ";
@@ -1002,7 +1007,7 @@ public class TodoTxtTouch extends ListActivity implements
 				if (filterText != null) {
 
 					actionbar_icon
-							.setImageResource(R.drawable.ic_actionbar_search);
+					.setImageResource(R.drawable.ic_actionbar_search);
 					filterText.setText(getString(R.string.title_search_results)
 							+ " " + m_search);
 
@@ -1012,7 +1017,7 @@ public class TodoTxtTouch extends ListActivity implements
 				filterText.setText("");
 				actionbar.setVisibility(View.GONE);
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -1023,13 +1028,13 @@ public class TodoTxtTouch extends ListActivity implements
 
 	private void updateSyncUI() {
 		// hide action bar
-		findViewById(R.id.actionbar).setVisibility(View.GONE);
-		// hide refresh button
+		//findViewById(R.id.actionbar).setVisibility(View.VISIBLE);
+		/*// hide refresh button
 		findViewById(R.id.btn_title_refresh).setVisibility(
 				m_app.m_pulling || m_app.m_pushing ? View.GONE : View.VISIBLE);
 		// show moving refresh indicator
 		findViewById(R.id.title_refresh_progress).setVisibility(
-				m_app.m_pulling || m_app.m_pushing ? View.VISIBLE : View.GONE);
+				m_app.m_pulling || m_app.m_pushing ? View.VISIBLE : View.GONE);*/
 		setFilteredTasks(false);
 	}
 
