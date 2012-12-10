@@ -1,7 +1,6 @@
 package com.todotxt.todotxttouch;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -14,14 +13,13 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -35,8 +33,10 @@ public class NfcActivity extends Activity{
 	private NfcAdapter mNfcAdapter;
 	private PendingIntent mNfcPendingIntent;
 
-	private Button add;
-	private Button filter;
+	private Button write;
+	
+	private RadioButton add;
+	private RadioButton filter;
 
 	private String nfcTagType;
 
@@ -62,8 +62,9 @@ public class NfcActivity extends Activity{
 		contexts = taskBag.getContexts();
 		contexts.add(0, "No context");
 
-		add = (Button)findViewById(R.id.nfc_add);
-		filter = (Button)findViewById(R.id.nfc_filter);
+		write = (Button)findViewById(R.id.nfc_write);
+		add = (RadioButton)findViewById(R.id.nfc_add);
+		filter = (RadioButton)findViewById(R.id.nfc_filter);
 		projectSpinner = (Spinner)findViewById(R.id.projects_spinner);
 		contextSpinner = (Spinner)findViewById(R.id.context_spinner);
 
@@ -75,20 +76,16 @@ public class NfcActivity extends Activity{
 		nfcTagType = new String("none");
 
 		//Set tag type and start listening to write tags.
-		add.setOnClickListener(new OnClickListener() {
+		write.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				nfcTagType = "add";
-				callNfcAlert();
-			}
-		});
-
-		filter.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				nfcTagType = "filter";
+				if(add.isChecked()){
+					nfcTagType = "add";
+				}
+				else if(filter.isChecked()){
+					nfcTagType = "filter";
+				}
 				callNfcAlert();
 			}
 		});

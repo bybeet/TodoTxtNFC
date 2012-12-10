@@ -3,11 +3,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+            android:id="@+id/nfc_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/nfc_add" />
+
+        <RadioButton
+            android:id="@+id/nfc_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nfc_filter" />
+    </RadioGroup>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="25dp" >
+        android:layout_marginBottom="25dp"
+        android:orientation="horizontal" >
 
         <Spinner
             android:id="@+id/projects_spinner"
@@ -18,15 +36,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Project"
+            android:text="+Project"
             android:textSize="25dp" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="25dp"  >
+        android:layout_marginBottom="25dp"
+        android:orientation="horizontal" >
 
         <Spinner
             android:id="@+id/context_spinner"
@@ -37,20 +55,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Context"
+            android:text="\@Context"
             android:textSize="25dp" />
     </RelativeLayout>
 
     <Button
-        android:id="@+id/nfc_add"
+        android:id="@+id/nfc_write"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/nfc_add" />
-
-    <Button
-        android:id="@+id/nfc_filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/nfc_filter" />
+        android:layout_height="55dp"
+        android:text="@string/nfc_write" />
 
 </LinearLayout>
