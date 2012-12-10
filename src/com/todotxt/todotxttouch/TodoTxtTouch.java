@@ -689,6 +689,7 @@ OnSharedPreferenceChangeListener {
 			break;
 		case R.id.nfc:
 			Intent i = new Intent(this, NfcActivity.class);
+			System.out.println(m_projects.toString());
 			i.putStringArrayListExtra(PROJECTS, m_projects);
 			startActivity(i);
 			break;

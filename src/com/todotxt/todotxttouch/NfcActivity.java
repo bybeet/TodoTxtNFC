@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import com.todotxt.todotxttouch.task.TaskBag;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -39,12 +41,18 @@ public class NfcActivity extends Activity{
 	private String nfcTagType;
 	private String tagContext;
 	
+	private TodoApplication m_app;
+	private TaskBag taskBag;
+	
 	private ArrayList<String> projects;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nfc);
+		
+		m_app = (TodoApplication) getApplication();
+		taskBag = m_app.getTaskBag();	
 
 		nfcTagType = new String("none");
 		tagContext = new String("+mmdroid");
@@ -72,8 +80,10 @@ public class NfcActivity extends Activity{
 		
 		
 		Intent i = getIntent();
-		projects = i.getStringArrayListExtra(TodoTxtTouch.PROJECTS);
+		//projects = i.getStringArrayListExtra(TodoTxtTouch.PROJECTS);
+		projects = taskBag.getProjects();
 		System.out.println(projects.toString());
+
 
 		mNfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
