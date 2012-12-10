@@ -101,20 +101,19 @@ public class NfcActivity extends Activity{
 	@Override
 	public void onPause(){
 		mNfcAdapter.disableForegroundDispatch(this);
-		mWriteMode = false;
 		super.onPause();
 	}
 
 	@Override
 	public void onResume(){
-		enableTagWriteMode();
 		super.onResume();
 	}
+
 
 	//Show user dialog for writing to NFC
 	//Give user and overview of what will be written
 	private void callNfcAlert(){
-		mWriteMode = true;
+		enableTagWriteMode();
 		StringBuilder title = new StringBuilder("");
 		title.append("Touch tag to write a ")
 			.append(nfcTagType);
@@ -143,6 +142,7 @@ public class NfcActivity extends Activity{
 
 	//Add an intent filter to discover NFC tags for writing data.
 	private void enableTagWriteMode() {
+		mWriteMode = true;
 		IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
 		mWriteTagFilters = new IntentFilter[] { tagDetected };
 		mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, mWriteTagFilters, null);
