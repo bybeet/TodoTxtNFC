@@ -28,6 +28,9 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -78,7 +81,7 @@ public class AddTask extends Activity {
 
 		m_app = (TodoApplication) getApplication();
 		taskBag = m_app.getTaskBag();	
-		
+
 		sendBroadcast(new Intent(Constants.INTENT_START_SYNC_WITH_REMOTE));
 
 		final Intent intent = getIntent();
@@ -106,7 +109,7 @@ public class AddTask extends Activity {
 		if (share_text != null) {
 			textInputField.setText(share_text);
 		}
-		
+
 		Task iniTask = null;
 
 		Task task = (Task) getIntent().getSerializableExtra(
@@ -134,10 +137,10 @@ public class AddTask extends Activity {
 				iniTask.initWithFilters(prios, contexts, projects);
 			}
 		}
-		
+
 		textInputField.setSelection(textInputField.getText().toString()
 				.length());
-		
+
 		// priorities
 		priorities = (Spinner) findViewById(R.id.priorities);
 		final ArrayList<String> prioArr = new ArrayList<String>();
@@ -165,7 +168,7 @@ public class AddTask extends Activity {
 						priority.inFileFormat()));
 				textInputField.setSelection(CursorPositionCalculator.calculate(
 						cursorPosition, currentText, textInputField.getText()
-								.toString()));
+						.toString()));
 			}
 
 			@Override
@@ -178,10 +181,10 @@ public class AddTask extends Activity {
 		final ArrayList<String> projectsArr = taskBag.getProjects();
 		projectsArr.add(0,this.getApplicationContext().getString(R.string.add_task_project_btn));
 		projects.setAdapter(Util.newSpinnerAdapter(this, projectsArr));
-		
+
 		if (iniTask != null) {
 			List<String> ps = iniTask.getProjects();
-			
+
 			if ((ps != null) && (ps.size() == 1))
 			{
 				int index = projectsArr.indexOf(ps.get(0));
@@ -216,17 +219,17 @@ public class AddTask extends Activity {
 		final ArrayList<String> contextsArr = taskBag.getContexts();
 		contextsArr.add(0, this.getApplicationContext().getString(R.string.add_task_context_btn));
 		contexts.setAdapter(Util.newSpinnerAdapter(this, contextsArr));
-		
+
 		if (iniTask != null) {
 			List<String> cs = iniTask.getContexts();
-			
+
 			if ((cs != null) && (cs.size() == 1))
 			{
 				int index = contextsArr.indexOf(cs.get(0));
 				contexts.setSelection(index < 0 ? 0 : index);
 			}
 		}
-		
+
 		contexts.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
@@ -273,6 +276,44 @@ public class AddTask extends Activity {
 			}
 
 		});
+	}
+
+	@Override
+	public void onResume(){
+		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+			NdefMessage[] messages = getNdefMessages(getIntent());
+			byte[] payload = messages[0].getRecords()[0].getPayload();
+			String keywords = new String(payload);
+			System.out.println(keywords);
+		}
+		super.onResume();
+	}
+
+	private NdefMessage[] getNdefMessages(Intent intent) {
+		// Parse the intent
+		NdefMessage[] msgs = null;
+		String action = intent.getAction();
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+				|| NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+			Parcelable[] rawMsgs = 
+					intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			if (rawMsgs != null) {
+				msgs = new NdefMessage[rawMsgs.length];
+				for (int i = 0; i < rawMsgs.length; i++) {
+					msgs[i] = (NdefMessage) rawMsgs[i];
+				}
+			} else {
+				// Unknown tag type
+				byte[] empty = new byte[] {};
+				NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
+				NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
+				msgs = new NdefMessage[] {msg};
+			}
+		} else {
+			Log.d(TAG, "Unknown intent.");
+			finish();
+		}
+		return msgs;
 	}
 
 	private void addEditAsync(final String input) {
