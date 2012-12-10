@@ -41,11 +41,10 @@ public class NfcActivity extends Activity{
 	private Button filter;
 
 	private String nfcTagType;
-	private String tagContext;
-	
+
 	private TodoApplication m_app;
 	private TaskBag taskBag;
-	
+
 	private ArrayList<String> projects;
 	private ArrayList<String> contexts;
 	private Spinner contextSpinner;
@@ -55,28 +54,27 @@ public class NfcActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nfc);
-		
+
 		m_app = (TodoApplication) getApplication();
 		taskBag = m_app.getTaskBag();	
-		
+
 		//Set ArrayLists to include all current projects and contexts in task list
 		projects = taskBag.getProjects();
 		contexts = taskBag.getContexts();
 		contexts.add(0, "No context");
-		
+
 		add = (Button)findViewById(R.id.nfc_add);
 		filter = (Button)findViewById(R.id.nfc_filter);
 		projectSpinner = (Spinner)findViewById(R.id.projects_spinner);
 		contextSpinner = (Spinner)findViewById(R.id.context_spinner);
-		
+
 		projectSpinner.setAdapter(Util.newSpinnerAdapter(this, projects));
 		contextSpinner.setAdapter(Util.newSpinnerAdapter(this, contexts));
-		
+
 		//initSpinners();
 
 		nfcTagType = new String("none");
-		tagContext = new String("+mmdroid");
-		
+
 		add.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -109,27 +107,31 @@ public class NfcActivity extends Activity{
 	public void onResume(){
 		super.onResume();
 	}
-	
+
 	private void initSpinners(){
-		
+
 	}
 
 	private void callNfcAlert(){
 		enableTagWriteMode();
-		StringBuilder dialog = new StringBuilder("");
-		dialog.append("Touch tag to write a ")
-			.append(nfcTagType)
-			.append("\nProject = ")
+		StringBuilder title = new StringBuilder("");
+		title.append("Touch tag to write a ")
+			.append(nfcTagType);
+		StringBuilder message = new StringBuilder("");
+		message.append("\nProject = ")
 			.append(projectSpinner.getSelectedItem())
 			.append("\nContext = ")
 			.append(contextSpinner.getSelectedItem());
-		new AlertDialog.Builder(NfcActivity.this).setTitle(dialog.toString())
-		.setOnCancelListener(new DialogInterface.OnCancelListener() {
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				disableTagWriteMode();
-			}
-		}).create().show();
+		new AlertDialog.Builder(NfcActivity.this).setTitle(title.toString())
+			.setMessage(message.toString())
+			.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					disableTagWriteMode();
+				}
+			})
+			.create()
+			.show();
 	}
 
 	public void disableTagWriteMode(){
@@ -149,8 +151,13 @@ public class NfcActivity extends Activity{
 		// Tag writing mode
 		if (mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 			Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-			if (writeTag(getKeywordAsNdef(tagContext.toString()), detectedTag)) {
-				Toast.makeText(this, "Success: Wrote a "+nfcTagType+" action with context "+tagContext+" to nfc tag.", Toast.LENGTH_LONG)
+			StringBuilder keyword = new StringBuilder("");
+			keyword.append("+").append(projectSpinner.getSelectedItem());
+			if(contextSpinner.getSelectedItemPosition() != 0){
+				keyword.append(" @").append(contextSpinner.getSelectedItem());
+			}
+			if (writeTag(getKeywordAsNdef(keyword.toString()), detectedTag)) {
+				Toast.makeText(this, "Success: "+nfcTagType+" action with keywords  \""+keyword.toString()+"\" written to nfc tag.", Toast.LENGTH_LONG)
 				.show();
 			} else {
 				Toast.makeText(this, "Write failed", Toast.LENGTH_LONG).show();
