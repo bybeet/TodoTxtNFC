@@ -285,9 +285,12 @@ public class AddTask extends Activity {
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
 			NdefMessage[] messages = getNdefMessages(getIntent());
 			byte[] payload = messages[0].getRecords()[0].getPayload();
-			String keywords = new String(payload);
-			System.out.println(keywords);
-			textInputField.setText(keywords);		}
+			String nfcMessage = new String(payload);
+			StringBuilder keywords = new StringBuilder();
+			keywords.append(nfcMessage).append(" ");
+			textInputField.setText(keywords.toString());
+			textInputField.setSelection(keywords.length());
+		}
 	}
 
 	private NdefMessage[] getNdefMessages(Intent intent) {
