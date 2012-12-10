@@ -280,13 +280,13 @@ public class AddTask extends Activity {
 
 	@Override
 	public void onResume(){
+		super.onResume();
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
 			NdefMessage[] messages = getNdefMessages(getIntent());
 			byte[] payload = messages[0].getRecords()[0].getPayload();
 			String keywords = new String(payload);
 			System.out.println(keywords);
 		}
-		super.onResume();
 	}
 
 	private NdefMessage[] getNdefMessages(Intent intent) {
