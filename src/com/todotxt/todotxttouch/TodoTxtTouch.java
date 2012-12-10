@@ -92,7 +92,7 @@ OnSharedPreferenceChangeListener {
 	private final static int REQUEST_FILTER = 1;
 	private final static int REQUEST_PREFERENCES = 2;
 	private final static int REQUEST_LOGIN = 3;
-	
+
 	public final static String PROJECTS = "com.todotxt.todotxttouch.LIST_PROJECTS";
 
 	private static TodoTxtTouch currentActivityPointer = null;
@@ -232,7 +232,7 @@ OnSharedPreferenceChangeListener {
 				NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
 				msgs = new NdefMessage[] {msg};
 			}
-			
+
 			// Setup the views
 			//setTitle(R.string.title_scanned_tag);
 			//buildTagViews(msgs);
@@ -283,10 +283,39 @@ OnSharedPreferenceChangeListener {
 			String nfcMessage = new String(payload);
 			String delimiter = " ";
 			String separatedMessage[] = nfcMessage.split(delimiter);
-			
-			System.out.println(separatedMessage.toString());
+
+			ArrayList<String> contexts = new ArrayList<String>();
+			ArrayList<String> projects = new ArrayList<String>();
+			ArrayList<String> filters = new ArrayList<String>();
+
+			for(int i = 0; i < separatedMessage.length; i++){
+				System.out.println(separatedMessage[i]);
+				//Check to see if a context or project.
+				if(separatedMessage[i].charAt(0) == '@'){
+					contexts.add(separatedMessage[i]);
+					String type = "Contexts";
+					if (!filters.contains(type)) {
+						filters.add(type);
+					}
+				}
+				if(separatedMessage[i].charAt(0) == '+'){
+					projects.add(separatedMessage[i]);
+					String type = "Projects";
+					if (!filters.contains(type)) {
+						filters.add(type);
+					}
+				}
+			}
+
+			m_prios = new ArrayList();
+			m_projects = projects;
+			m_contexts = contexts;
+			m_search = new String();
+			m_filters = filters;
+			setFilteredTasks(false);
 		}
 	}
+
 
 	private NdefMessage[] getNdefMessages(Intent intent) {
 		//Parse the intent
