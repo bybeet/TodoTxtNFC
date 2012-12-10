@@ -28,7 +28,11 @@ import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -159,6 +163,68 @@ public class Filter extends TabActivity {
 				search.setText("");
 			}
 		});
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		//Check to see if the activity was called with NFC NDEF.
+		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+			//Get NDEF message
+			NdefMessage[] message = getNdefMessages(getIntent());
+			//Get the information from the NDEF message.
+			byte[] payload = message[0].getRecords()[0].getPayload();
+			//Place info into a string.
+			String nfcMessage = new String(payload);
+			StringBuilder keywords = new StringBuilder();
+			//Use string builder to efficiently add a space to the end
+			//		Also could have just added a space using the string builder to create the tag
+			keywords.append(nfcMessage).append(" ");
+			//Set the todo textfield to the project and context from the tag.
+			Log.v(TAG, "NFC OK");
+			Intent data = new Intent();
+			Log.v(TAG, "Setting message filter types.");
+			appliedFilters = new ArrayList<String>();
+			data.putStringArrayListExtra(Constants.EXTRA_PRIORITIES,
+					getItems(priorities, getString(R.string.filter_tab_priorities)));
+			data.putStringArrayListExtra(Constants.EXTRA_PROJECTS,
+					getItems(projects, getString(R.string.filter_tab_projects)));
+			data.putStringArrayListExtra(Constants.EXTRA_CONTEXTS,
+					getItems(contexts, getString(R.string.filter_tab_contexts)));
+			data.putExtra(Constants.EXTRA_SEARCH, search.getText()
+					.toString());
+			data.putStringArrayListExtra(Constants.EXTRA_APPLIED_FILTERS,
+					appliedFilters);
+			setResult(Activity.RESULT_OK, data);
+			finish();
+		}
+	}
+
+	private NdefMessage[] getNdefMessages(Intent intent) {
+		//Parse the intent
+		NdefMessage[] msgs = null;
+		String action = intent.getAction();
+		//If the Intent action is the NDEF intent filter action, parse the message.
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)	|| NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+			//Get the messages from the NFC NDEF.
+			Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			if (rawMsgs != null) {
+				msgs = new NdefMessage[rawMsgs.length];
+				for (int i = 0; i < rawMsgs.length; i++) {
+					msgs[i] = (NdefMessage) rawMsgs[i];
+				}
+			} else {
+				// Unknown tag type.
+				byte[] empty = new byte[] {};
+				NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
+				NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
+				msgs = new NdefMessage[] {msg};
+			}
+		} else {
+			Log.d(TAG, "Unknown intent.");
+			finish();
+		}
+		return msgs;
 	}
 
 	private View buildIndicator(int textRes) {

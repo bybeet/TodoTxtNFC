@@ -788,15 +788,11 @@ OnSharedPreferenceChangeListener {
 		Log.v(TAG, "onActivityResult: resultCode=" + resultCode + " i=" + data);
 		if (requestCode == REQUEST_FILTER) {
 			if (resultCode == Activity.RESULT_OK) {
-				m_prios = Priority.toPriority(data
-						.getStringArrayListExtra(Constants.EXTRA_PRIORITIES));
-				m_projects = data
-						.getStringArrayListExtra(Constants.EXTRA_PROJECTS);
-				m_contexts = data
-						.getStringArrayListExtra(Constants.EXTRA_CONTEXTS);
+				m_prios = Priority.toPriority(data.getStringArrayListExtra(Constants.EXTRA_PRIORITIES));
+				m_projects = data.getStringArrayListExtra(Constants.EXTRA_PROJECTS);
+				m_contexts = data.getStringArrayListExtra(Constants.EXTRA_CONTEXTS);
 				m_search = data.getStringExtra(Constants.EXTRA_SEARCH);
-				m_filters = data
-						.getStringArrayListExtra(Constants.EXTRA_APPLIED_FILTERS);
+				m_filters = data.getStringArrayListExtra(Constants.EXTRA_APPLIED_FILTERS);
 				setFilteredTasks(false);
 			}
 		} else if (requestCode == REQUEST_PREFERENCES) {
