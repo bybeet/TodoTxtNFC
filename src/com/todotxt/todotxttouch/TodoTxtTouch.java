@@ -92,6 +92,8 @@ OnSharedPreferenceChangeListener {
 	private final static int REQUEST_FILTER = 1;
 	private final static int REQUEST_PREFERENCES = 2;
 	private final static int REQUEST_LOGIN = 3;
+	
+	public final static String PROJECTS = "com.todotxt.todotxttouch.LIST_PROJECTS";
 
 	private static TodoTxtTouch currentActivityPointer = null;
 
@@ -687,6 +689,7 @@ OnSharedPreferenceChangeListener {
 			break;
 		case R.id.nfc:
 			Intent i = new Intent(this, NfcActivity.class);
+			i.putStringArrayListExtra(PROJECTS, m_projects);
 			startActivity(i);
 			break;
 		default:

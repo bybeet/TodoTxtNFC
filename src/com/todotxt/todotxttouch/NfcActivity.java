@@ -2,6 +2,7 @@ package com.todotxt.todotxttouch;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,6 +37,9 @@ public class NfcActivity extends Activity{
 	private Button filter;
 
 	private String nfcTagType;
+	private String tagContext;
+	
+	private ArrayList<String> projects;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -43,6 +47,7 @@ public class NfcActivity extends Activity{
 		setContentView(R.layout.nfc);
 
 		nfcTagType = new String("none");
+		tagContext = new String("+mmdroid");
 
 		add = (Button)findViewById(R.id.nfc_add);
 		filter = (Button)findViewById(R.id.nfc_filter);
@@ -64,6 +69,11 @@ public class NfcActivity extends Activity{
 				callNfcAlert();
 			}
 		});
+		
+		
+		Intent i = getIntent();
+		projects = i.getStringArrayListExtra(TodoTxtTouch.PROJECTS);
+		System.out.println(projects.toString());
 
 		mNfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -111,8 +121,8 @@ public class NfcActivity extends Activity{
 		// Tag writing mode
 		if (mWriteMode && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 			Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-			if (writeTag(getKeywordAsNdef("+mmdroid"), detectedTag)) {
-				Toast.makeText(this, "Success: Wrote placeid to nfc tag", Toast.LENGTH_LONG)
+			if (writeTag(getKeywordAsNdef(tagContext.toString()), detectedTag)) {
+				Toast.makeText(this, "Success: Wrote a "+nfcTagType+" action with context "+tagContext+" to nfc tag.", Toast.LENGTH_LONG)
 				.show();
 			} else {
 				Toast.makeText(this, "Write failed", Toast.LENGTH_LONG).show();
@@ -157,10 +167,10 @@ public class NfcActivity extends Activity{
 		}
 	}
 
-	public static NdefMessage getKeywordAsNdef(String msg) {
+	public NdefMessage getKeywordAsNdef(String msg) {
 		byte[] textBytes = msg.getBytes();
-		NdefRecord textRecord = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
-				"application/nfc.todotxtnfc.add".getBytes(), new byte[] {}, textBytes);
+		String ndefText = "application/nfc.todotxtnfc." + nfcTagType;
+		NdefRecord textRecord = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, ndefText.getBytes(), new byte[] {}, textBytes);
 		return new NdefMessage(new NdefRecord[] { textRecord });
 	}
 
