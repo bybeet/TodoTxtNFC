@@ -280,44 +280,56 @@ OnSharedPreferenceChangeListener {
 			byte[] payload = message[0].getRecords()[0].getPayload();
 			//Place info into a string.
 			String nfcMessage = new String(payload);
+			//Separate the nfc message into an array for each
+			//context/project.
 			String delimiter = " ";
 			String separatedMessage[] = nfcMessage.split(delimiter);
-
-			ArrayList<String> contexts = new ArrayList<String>();
-			ArrayList<String> projects = new ArrayList<String>();
-			ArrayList<String> filters = new ArrayList<String>();
-
-			for(int i = 0; i < separatedMessage.length; i++){
-				System.out.println(separatedMessage[i]);
-				
-				//Check to see if a context or project.
-				if(separatedMessage[i].charAt(0) == '@'){
-					contexts.add(separatedMessage[i].substring(1));
-					String type = "Contexts";
-					if (!filters.contains(type)) {
-						filters.add(type);
-					}
-				}
-				if(separatedMessage[i].charAt(0) == '+'){
-					projects.add(separatedMessage[i].substring(1));
-					String type = "Projects";
-					if (!filters.contains(type)) {
-						System.out.println("Adding projects to filters");
-						filters.add(type);
-					}
-				}
-			}
-
-			m_prios = Priority.toPriority(new ArrayList());
-			m_projects = projects;
-			m_contexts = contexts;
-			m_search = new String();
-			m_filters = filters;
-			setFilteredTasks(false);
+			
+			//Set the filter arrays based on NFC message.
+			setFilterArrays(separatedMessage);
 		}
 		else{
 			setFilteredTasks(true);
 		}
+	}
+	
+	private void setFilterArrays(String[] separatedMessage){
+		//Start new ArrayList to contain the filter terms.
+		ArrayList<String> contexts = new ArrayList<String>();
+		ArrayList<String> projects = new ArrayList<String>();
+		ArrayList<String> filters = new ArrayList<String>();
+
+		for(int i = 0; i < separatedMessage.length; i++){
+			System.out.println(separatedMessage[i]);
+			
+			//Check to see if a context or project.
+			//Use substring because filter does not use
+			//the first char (either @ or +).
+			if(separatedMessage[i].charAt(0) == '@'){
+				contexts.add(separatedMessage[i].substring(1));
+				String type = "Contexts";
+				if (!filters.contains(type)) {
+					filters.add(type);
+				}
+			}
+			if(separatedMessage[i].charAt(0) == '+'){
+				projects.add(separatedMessage[i].substring(1));
+				String type = "Projects";
+				if (!filters.contains(type)) {
+					System.out.println("Adding projects to filters");
+					filters.add(type);
+				}
+			}
+		}
+
+		//Reset the filter arrays to either empty arrays or
+		//the arrays we filled in the above for loop.
+		m_prios = Priority.toPriority(new ArrayList());
+		m_projects = projects;
+		m_contexts = contexts;
+		m_search = new String();
+		m_filters = filters;
+		setFilteredTasks(false);
 	}
 
 
