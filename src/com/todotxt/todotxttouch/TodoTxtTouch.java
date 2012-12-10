@@ -271,7 +271,6 @@ OnSharedPreferenceChangeListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		setFilteredTasks(true);
 
 		//Check to see if the activity was called with NFC NDEF.
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
@@ -290,29 +289,34 @@ OnSharedPreferenceChangeListener {
 
 			for(int i = 0; i < separatedMessage.length; i++){
 				System.out.println(separatedMessage[i]);
+				
 				//Check to see if a context or project.
 				if(separatedMessage[i].charAt(0) == '@'){
-					contexts.add(separatedMessage[i]);
+					contexts.add(separatedMessage[i].substring(1));
 					String type = "Contexts";
 					if (!filters.contains(type)) {
 						filters.add(type);
 					}
 				}
 				if(separatedMessage[i].charAt(0) == '+'){
-					projects.add(separatedMessage[i]);
+					projects.add(separatedMessage[i].substring(1));
 					String type = "Projects";
 					if (!filters.contains(type)) {
+						System.out.println("Adding projects to filters");
 						filters.add(type);
 					}
 				}
 			}
 
-			m_prios = new ArrayList();
+			m_prios = Priority.toPriority(new ArrayList());
 			m_projects = projects;
 			m_contexts = contexts;
 			m_search = new String();
 			m_filters = filters;
 			setFilteredTasks(false);
+		}
+		else{
+			setFilteredTasks(true);
 		}
 	}
 
