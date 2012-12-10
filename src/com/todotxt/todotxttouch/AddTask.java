@@ -66,6 +66,7 @@ public class AddTask extends Activity {
 	private TaskBag taskBag;
 
 	private TextView titleBarLabel;
+	private EditText textInputField;
 
 	private String share_text;
 
@@ -103,7 +104,7 @@ public class AddTask extends Activity {
 		titleBarLabel = (TextView) findViewById(R.id.title_bar_label);
 
 		// text
-		final EditText textInputField = (EditText) findViewById(R.id.taskText);
+		textInputField = (EditText) findViewById(R.id.taskText);
 		textInputField.setGravity(Gravity.TOP);
 
 		if (share_text != null) {
@@ -286,7 +287,7 @@ public class AddTask extends Activity {
 			byte[] payload = messages[0].getRecords()[0].getPayload();
 			String keywords = new String(payload);
 			System.out.println(keywords);
-		}
+			textInputField.setText(keywords);		}
 	}
 
 	private NdefMessage[] getNdefMessages(Intent intent) {
