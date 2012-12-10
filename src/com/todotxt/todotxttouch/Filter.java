@@ -176,7 +176,10 @@ public class Filter extends TabActivity {
 			byte[] payload = message[0].getRecords()[0].getPayload();
 			//Place info into a string.
 			String nfcMessage = new String(payload);
-			StringBuilder keywords = new StringBuilder();
+			String delimiter = " ";
+			String separatedMessage[] = nfcMessage.split(delimiter);
+			
+			System.out.println(separatedMessage.toString());
 			
 			//Load projects and contexts from NFC tag into intent to send 
 			Log.v(TAG, "NFC OK");
