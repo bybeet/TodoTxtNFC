@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
@@ -18,6 +16,9 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class NfcActivity extends Activity{
@@ -28,24 +29,49 @@ public class NfcActivity extends Activity{
  	private IntentFilter[] mWriteTagFilters;
  	private NfcAdapter mNfcAdapter;
  	private PendingIntent mNfcPendingIntent;
+ 	
+ 	private Button add;
+ 	private Button filter;
+ 	
+ 	private String nfcTagType;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nfc);
+		
+		nfcTagType = new String("none");
+		
+		add = (Button)findViewById(R.id.nfc_add);
+		filter = (Button)findViewById(R.id.nfc_filter);
+		
+		add.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				nfcTagType = "add";
+			}
+		});
+		
+		filter.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				nfcTagType = "filter";
+			}
+		});
 
 		mNfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 		
-		//enableTagWriteMode();
-		 
-		new AlertDialog.Builder(NfcActivity.this).setTitle("Touch tag to write")
+		
+		/*new AlertDialog.Builder(NfcActivity.this).setTitle("Touch tag to write")
 		    .setOnCancelListener(new DialogInterface.OnCancelListener() {
 		        @Override
 		        public void onCancel(DialogInterface dialog) {
 		            disableTagWriteMode();
 		        }
-		    }).create().show();
+		    }).create().show();*/
 	}
 	
 	@Override

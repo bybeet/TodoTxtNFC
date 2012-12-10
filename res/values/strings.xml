@@ -148,5 +148,7 @@ You should have received a copy of the GNU General Public License along with Tod
 
     <!-- NFC -->
     <string name="nfc">NFC</string>
+    <string name="nfc_add">Add new TodoList Item</string>
+    <string name="nfc_filter">Filter TodoList Items</string>
     
 </resources>
