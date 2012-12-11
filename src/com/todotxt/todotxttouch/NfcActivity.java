@@ -16,6 +16,7 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -164,12 +165,19 @@ public class NfcActivity extends Activity{
 			if(contextSpinner.getSelectedItemPosition() != 0){
 				keyword.append(" @").append(contextSpinner.getSelectedItem());
 			}
+			
+			//Set toast message depending on outcome.
+			String toastText;
 			if (writeTag(getKeywordAsNdef(keyword.toString()), detectedTag)) {
-				Toast.makeText(this, "Success: "+nfcTagType+" action with keywords  \""+keyword.toString()+"\" written to nfc tag.", Toast.LENGTH_LONG).show();
+				toastText = "Success: "+nfcTagType+" action with keywords  \""+keyword.toString()+"\" written to nfc tag.";	
 				alert.dismiss();
 			} else {
-				Toast.makeText(this, "Write failed", Toast.LENGTH_LONG).show();
+				toastText = "Write failed";
 			}
+			//Done this way so setGravity works correctly.
+			Toast toast = Toast.makeText(this, toastText, Toast.LENGTH_LONG);
+			toast.setGravity(Gravity.CENTER, 0, 0);
+			toast.show();
 		}
 	}
 
