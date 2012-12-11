@@ -39,6 +39,8 @@ public class NfcActivity extends Activity{
 	private RadioButton filter;
 
 	private String nfcTagType;
+	
+	private AlertDialog alert;
 
 	private TodoApplication m_app;
 	private TaskBag taskBag;
@@ -107,7 +109,6 @@ public class NfcActivity extends Activity{
 		super.onResume();
 	}
 
-
 	//Show user dialog for writing to NFC
 	//Give user and overview of what will be written
 	private void callNfcAlert(){
@@ -125,7 +126,7 @@ public class NfcActivity extends Activity{
 			.append(projectSpinner.getSelectedItem())
 			.append("\nContext = ")
 			.append(contextSpinner.getSelectedItem());
-		new AlertDialog.Builder(NfcActivity.this).setTitle(title.toString())
+		alert = new AlertDialog.Builder(NfcActivity.this).setTitle(title.toString())
 			.setMessage(message.toString())
 			.setOnCancelListener(new DialogInterface.OnCancelListener() {
 				@Override
@@ -133,8 +134,10 @@ public class NfcActivity extends Activity{
 					disableTagWriteMode();
 				}
 			})
-			.create()
-			.show();
+			.setCancelable(true)
+			.create();
+		alert.show();
+		
 	}
 
 	//Stop listening for NFC tags
@@ -151,7 +154,6 @@ public class NfcActivity extends Activity{
 		mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent, mWriteTagFilters, null);
 	}
 
-	//If 
 	@Override
 	protected void onNewIntent(Intent intent) {
 		// Tag writing mode
@@ -163,8 +165,8 @@ public class NfcActivity extends Activity{
 				keyword.append(" @").append(contextSpinner.getSelectedItem());
 			}
 			if (writeTag(getKeywordAsNdef(keyword.toString()), detectedTag)) {
-				Toast.makeText(this, "Success: "+nfcTagType+" action with keywords  \""+keyword.toString()+"\" written to nfc tag.", Toast.LENGTH_LONG)
-				.show();
+				Toast.makeText(this, "Success: "+nfcTagType+" action with keywords  \""+keyword.toString()+"\" written to nfc tag.", Toast.LENGTH_LONG).show();
+				alert.dismiss();
 			} else {
 				Toast.makeText(this, "Write failed", Toast.LENGTH_LONG).show();
 			}
